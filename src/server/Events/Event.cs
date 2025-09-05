@@ -11,8 +11,10 @@ public class Event
     [Required]
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    [Required]
     public DateTime DateTime { get; set; } 
-    public string Location  { get; set; } =string.Empty;
+    [Required]
+    public string Location { get; set; } = string.Empty;
 
 
     public ICollection<Category> Categories { get; set; } = new List<Category>();

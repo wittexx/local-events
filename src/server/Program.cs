@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Server.Data;
+using Server.Events;
 using Scalar.AspNetCore;
 
 // Create the web application builder
@@ -21,12 +21,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add API services
+// Add OpenAPI services for Scalar
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new() { Title = "Local Events API", Version = "v1" });
-});
+builder.Services.AddOpenApi();
 
 // Build the application
 var app = builder.Build();
@@ -34,8 +31,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    // Enable Swagger/OpenAPI
-    app.UseSwagger();
+    // Map OpenAPI endpoint
+    app.MapOpenApi();
     
     // Add Scalar API documentation
     app.MapScalarApiReference(options =>
@@ -76,8 +73,6 @@ app.MapGet("/api/events", () => new[] {
            Description = "En fantastisk utställning med lokala konstnärer",
            StartDate = DateTime.Today.AddDays(7),
            Location = "Galleri Stockholm",
-           City = "Stockholm",
-           IsFree = true
        },
        new {
            Id = 2,
@@ -85,8 +80,6 @@ app.MapGet("/api/events", () => new[] {
            Description = "Gratis yoga för alla nivåer",
            StartDate = DateTime.Today.AddDays(3),
            Location = "Tantolunden",
-           City = "Stockholm", 
-           IsFree = true
        }
    })
    .WithName("GetEvents")
@@ -122,9 +115,9 @@ app.MapGet("/api/events/{id:int}", (int id) => {
    .Produces<object>(200)
    .Produces<object>(404);
 
-// TODO: Add your real CRUD endpoints here
-// app.MapEventsEndpoints();
-// app.MapCategoriesEndpoints();
+// Register CRUD endpoints
+app.MapCreateEventEndpoints();
+app.MapCreateCategoryEndpoints();
 
 // Start the server
 app.Run();
